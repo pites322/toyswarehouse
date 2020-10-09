@@ -22,7 +22,7 @@ const Category = (props) => {
         categoryValue = name
     }
     function deleteCat(){
-
+        dispatch({type: 'onDeleteCategory', category_id: id})
     }
 
     function onChangeCategory(){

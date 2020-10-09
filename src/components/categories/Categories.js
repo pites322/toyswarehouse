@@ -13,13 +13,11 @@ import {changeCategory, updateCategoryForm} from "../../store/actions/productsAc
 function Categories({categoriesData, categoriesOnChange, categoriesForm}){
     const dispatch = useDispatch()
     const{category_name} = categoriesForm
-    console.log('categoriesData', categoriesData)
     useEffect(() => {
         dispatch({ type: "getFetchedCategories" })
     }, [])
 
     let isCreating = false
-    console.log('categoryOnChange', categoriesOnChange)
     if (categoriesOnChange === 'create'){
         isCreating = true
     }

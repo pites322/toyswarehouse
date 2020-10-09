@@ -6,23 +6,41 @@ import { useHistory } from 'react-router-dom';
 import FormGroup from "@material-ui/core/FormGroup";
 import InputBase from "@material-ui/core/InputBase";
 import Product from "../product/Product";
+import {updateProductForm} from "../../store/actions/productsActions";
+import Category from "../category/Category";
 
 
 
 
-const Products = ({products}) => {
+const Products = ({products, productsForm, categories, productsFormVisible}) => {
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch({ type: "getFetchedProducts" })
+        dispatch({ type: "getFetchedCategories" })
     }, [])
+    const{name, price, description, category} = productsForm
 
     let history = useHistory();
+    let formVisible = false
 
     const toTransactions = () => {
         history.push('/transactions')
     }
     const toCategories = () => {
         history.push('/categories')
+    }
+
+    function showForm(){
+        dispatch({type: 'showProductForm'})
+    }
+
+    function addProduct(e){
+        e.preventDefault()
+        dispatch({type: 'addFetchedProduct', ...productsForm})
+    }
+
+    const onChangeElem = ({ nativeEvent: { target }}) => {
+        dispatch(updateProductForm({ [target.name]: target.value }))
     }
 
     // let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjAxOTU1NjE2LCJleHAiOjE2MDIwNDIwMTZ9.ZWoESaSsbPyYbSzHTmQlTE0LB6hGQTiVnl7Cr-WmNIc'
@@ -87,6 +105,20 @@ const Products = ({products}) => {
     // )
     return (
         <div>
+            <div className={productsFormVisible ? 'd_none': "d_inl_block"}>
+                <button onClick={showForm}>Add</button>
+            </div>
+            <div className={productsFormVisible ? "d_inl_block":  'd_none'}>
+                <form onSubmit={addProduct}>
+                    <input name='name' value={name} onChange={onChangeElem}/>
+                    <input name='price' value={price} onChange={onChangeElem}/>
+                    <input name='description' value={description} onChange={onChangeElem}/>
+                    <select name='categoryId' value={category} onChange={onChangeElem}>
+                        map({categories.map(category => <option value={category.id}>{category.name}</option>)})
+                    </select>
+                    <button type='submit'>Save</button>
+                </form>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -115,7 +147,10 @@ const Products = ({products}) => {
 const mapStatePoProps = state => {
     console.log(state)
     return {
-        products: state.products.products
+        products: state.products.products,
+        productsForm: state.products.productsForm,
+        categories: state.products.categories,
+        productsFormVisible: state.products.productsFormVisible
     }
 }
 
